@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-10-01T08:15:47.740Z",
+  "summary": {
+    "total": 15,
+    "passed": 9,
+    "failed": 6,
+    "successRate": "60.0"
+  },
+  "details": [
+    {
+      "testName": "File Structure Check",
+      "passed": true,
+      "details": "All required files present"
+    },
+    {
+      "testName": "Package Dependencies",
+      "passed": true,
+      "details": "All required dependencies present"
+    },
+    {
+      "testName": "Environment Variables",
+      "passed": false,
+      "details": "Missing: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_MAPBOX_ACCESS_TOKEN, VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID"
+    },
+    {
+      "testName": "Database Connection",
+      "passed": false,
+      "details": "Connection failed: TypeError: fetch failed"
+    },
+    {
+      "testName": "Database Tables",
+      "passed": true,
+      "details": "All required tables exist"
+    },
+    {
+      "testName": "Firebase Configuration",
+      "passed": false,
+      "details": "Firebase config missing or invalid"
+    },
+    {
+      "testName": "Mapbox Configuration",
+      "passed": false,
+      "details": "Mapbox token missing or invalid"
+    },
+    {
+      "testName": "Component Imports",
+      "passed": false,
+      "details": "Invalid components: ../src/components/media/MediaPlayer.tsx, ../src/components/media/MediaUpload.tsx, ../src/components/map/EnhancedAdminMap.tsx, ../src/components/admin/TestMode.tsx"
+    },
+    {
+      "testName": "Service Imports",
+      "passed": false,
+      "details": "Invalid services: ../src/lib/firebase.ts, ../src/lib/services/distance.ts"
+    },
+    {
+      "testName": "Build Process",
+      "passed": true,
+      "details": "Build configuration ready"
+    },
+    {
+      "testName": "Security Features",
+      "passed": true,
+      "details": "All security features present"
+    },
+    {
+      "testName": "Real-time Features",
+      "passed": true,
+      "details": "All real-time features present"
+    },
+    {
+      "testName": "Media Handling",
+      "passed": true,
+      "details": "All media features present"
+    },
+    {
+      "testName": "Map Features",
+      "passed": true,
+      "details": "All map features present"
+    },
+    {
+      "testName": "Test Mode Features",
+      "passed": true,
+      "details": "All test features present"
+    }
+  ],
+  "issues": []
+}

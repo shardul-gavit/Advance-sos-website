@@ -32,6 +32,19 @@ export interface RouteInfo {
   polyline: [number, number][];
   helperId?: string;
   userId?: string;
+  // Advanced routing properties
+  mode?: 'emergency' | 'optimal' | 'fastest' | 'shortest';
+  traffic?: boolean;
+  tolls?: boolean;
+  alternatives?: RouteInfo[];
+  segmentIndex?: number;
+  waypoints?: [number, number][];
+  estimatedFuel?: number; // in liters
+  estimatedCost?: number; // in currency
+  roadTypes?: string[]; // ['highway', 'local', 'toll']
+  trafficConditions?: 'low' | 'medium' | 'high' | 'severe';
+  weatherImpact?: 'none' | 'light' | 'moderate' | 'severe';
+  emergencyPriority?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface IsochroneZone {

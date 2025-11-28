@@ -43,6 +43,7 @@ export interface MapFilters {
   showRoutes: boolean;
   showClusters: boolean;
   showHeatmap: boolean;
+  showMarkers: boolean;
 }
 
 export interface MapBounds {

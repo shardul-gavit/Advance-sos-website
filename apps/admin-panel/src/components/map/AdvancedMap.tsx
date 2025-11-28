@@ -91,6 +91,16 @@ export const AdvancedMap: React.FC<AdvancedMapProps> = ({
   const [sweepColor, setSweepColor] = useState('#ff0000');
   const [isDrawing, setIsDrawing] = useState(false);
 
+  // Advanced routing states
+  const [routingMode, setRoutingMode] = useState<'emergency' | 'optimal' | 'fastest' | 'shortest'>('emergency');
+  const [routePoints, setRoutePoints] = useState<[number, number][]>([]);
+  const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
+  const [routeOptimization, setRouteOptimization] = useState<'single' | 'multi' | 'roundtrip'>('single');
+  const [routeAlternatives, setRouteAlternatives] = useState<RouteInfo[]>([]);
+  const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
+  const [routeTraffic, setRouteTraffic] = useState<boolean>(true);
+  const [routeTolls, setRouteTolls] = useState<boolean>(false);
+
   // Configuration - use useMemo to prevent infinite re-renders
   const geoSweepConfig: GeoSweepConfig = useMemo(() => ({
     enabled: showGeoSweep,
@@ -244,6 +254,9 @@ export const AdvancedMap: React.FC<AdvancedMapProps> = ({
 
     // Map click for GeoSweep
     map.current.on('click', handleMapClick);
+
+    // Route click for advanced routing
+    map.current.on('click', handleRouteClick);
 
     // Zone click
     map.current.on('click', 'zones-fill', handleZoneClick);
@@ -650,6 +663,185 @@ export const AdvancedMap: React.FC<AdvancedMapProps> = ({
 
   const clearRoutes = () => {
     setRoutes([]);
+    setRouteAlternatives([]);
+    setRoutePoints([]);
+    setSelectedRouteIndex(0);
+  };
+
+  // Advanced routing functions
+  const calculateRoute = async (origin: [number, number], destination: [number, number], mode: string = 'emergency') => {
+    setIsCalculatingRoute(true);
+    try {
+      const { route, error } = await GeospatialService.getRoute(origin, destination);
+      if (error) {
+        console.error('Route calculation failed:', error);
+        return;
+      }
+      
+      if (route) {
+        const newRoute: RouteInfo = {
+          ...route,
+          mode: mode as any,
+          traffic: routeTraffic,
+          tolls: routeTolls,
+          alternatives: []
+        };
+        
+        setRoutes(prev => [...prev, newRoute]);
+        setSelectedRouteIndex(0);
+        
+        // Calculate alternative routes if needed
+        if (mode === 'optimal') {
+          await calculateAlternativeRoutes(origin, destination);
+        }
+      }
+    } catch (error) {
+      console.error('Route calculation error:', error);
+    } finally {
+      setIsCalculatingRoute(false);
+    }
+  };
+
+  const calculateAlternativeRoutes = async (origin: [number, number], destination: [number, number]) => {
+    try {
+      // Calculate fastest route
+      const { route: fastestRoute } = await GeospatialService.getRoute(origin, destination);
+      if (fastestRoute) {
+        const fastest: RouteInfo = {
+          ...fastestRoute,
+          mode: 'fastest',
+          traffic: routeTraffic,
+          tolls: routeTolls
+        };
+        
+        // Calculate shortest route
+        const { route: shortestRoute } = await GeospatialService.getRoute(origin, destination);
+        if (shortestRoute) {
+          const shortest: RouteInfo = {
+            ...shortestRoute,
+            mode: 'shortest',
+            traffic: false,
+            tolls: false
+          };
+          
+          setRouteAlternatives([fastest, shortest]);
+        }
+      }
+    } catch (error) {
+      console.error('Alternative routes calculation error:', error);
+    }
+  };
+
+  const calculateMultiPointRoute = async (points: [number, number][]) => {
+    if (points.length < 2) return;
+    
+    setIsCalculatingRoute(true);
+    try {
+      const routeSegments: RouteInfo[] = [];
+      
+      for (let i = 0; i < points.length - 1; i++) {
+        const origin = points[i];
+        const destination = points[i + 1];
+        
+        const { route, error } = await GeospatialService.getRoute(origin, destination);
+        if (route && !error) {
+          routeSegments.push({
+            ...route,
+            mode: routingMode,
+            traffic: routeTraffic,
+            tolls: routeTolls,
+            segmentIndex: i
+          });
+        }
+      }
+      
+      setRoutes(routeSegments);
+    } catch (error) {
+      console.error('Multi-point route calculation error:', error);
+    } finally {
+      setIsCalculatingRoute(false);
+    }
+  };
+
+  const optimizeRoute = async (points: [number, number][]) => {
+    if (points.length < 3) return;
+    
+    setIsCalculatingRoute(true);
+    try {
+      // Use traveling salesman problem approximation for route optimization
+      const optimizedPoints = await optimizePointOrder(points);
+      await calculateMultiPointRoute(optimizedPoints);
+    } catch (error) {
+      console.error('Route optimization error:', error);
+    } finally {
+      setIsCalculatingRoute(false);
+    }
+  };
+
+  const optimizePointOrder = async (points: [number, number][]): Promise<[number, number][]> => {
+    // Simple nearest neighbor algorithm for TSP
+    const unvisited = [...points];
+    const optimized: [number, number][] = [];
+    
+    // Start with the first point
+    let current = unvisited.shift()!;
+    optimized.push(current);
+    
+    while (unvisited.length > 0) {
+      // Find nearest unvisited point
+      let nearestIndex = 0;
+      let minDistance = Infinity;
+      
+      for (let i = 0; i < unvisited.length; i++) {
+        const distance = GeospatialService.calculateDistance(current, unvisited[i]);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestIndex = i;
+        }
+      }
+      
+      current = unvisited.splice(nearestIndex, 1)[0];
+      optimized.push(current);
+    }
+    
+    return optimized;
+  };
+
+  const handleRouteClick = (e: mapboxgl.MapMouseEvent) => {
+    if (!showRoutes || isDrawing) return;
+    
+    const { lng, lat } = e.lngLat;
+    const newPoint: [number, number] = [lng, lat];
+    
+    setRoutePoints(prev => {
+      const updated = [...prev, newPoint];
+      
+      // Auto-calculate route if we have 2 or more points
+      if (updated.length >= 2) {
+        if (routeOptimization === 'single') {
+          calculateRoute(updated[updated.length - 2], updated[updated.length - 1], routingMode);
+        } else if (routeOptimization === 'multi') {
+          calculateMultiPointRoute(updated);
+        } else if (routeOptimization === 'roundtrip') {
+          const roundTripPoints = [...updated, updated[0]];
+          calculateMultiPointRoute(roundTripPoints);
+        }
+      }
+      
+      return updated;
+    });
+  };
+
+  const selectRouteAlternative = (index: number) => {
+    setSelectedRouteIndex(index);
+    if (routeAlternatives[index]) {
+      setRoutes([routeAlternatives[index]]);
+    }
+  };
+
+  const clearRoutePoints = () => {
+    setRoutePoints([]);
+    clearRoutes();
   };
 
   const clearIsochrones = () => {
@@ -742,6 +934,156 @@ export const AdvancedMap: React.FC<AdvancedMapProps> = ({
               <span className="text-gray-400">Responders:</span>
               <span className="text-blue-400">{selectedSweep.respondersCount || 0}</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced Routing Control Panel */}
+      {showRoutes && (
+        <div className="absolute top-4 left-4 bg-black/80 border border-blue-400 rounded-lg p-4 z-10 min-w-80">
+          <h3 className="text-sm font-semibold text-blue-300 mb-4 uppercase tracking-widest">
+            Advanced Routing
+          </h3>
+          
+          {/* Routing Mode Selection */}
+          <div className="space-y-3 text-xs">
+            <div>
+              <label className="text-gray-400 block mb-1">Routing Mode:</label>
+              <select 
+                value={routingMode}
+                onChange={(e) => setRoutingMode(e.target.value as any)}
+                className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-xs"
+              >
+                <option value="emergency">🚨 Emergency</option>
+                <option value="optimal">⚡ Optimal</option>
+                <option value="fastest">🏃 Fastest</option>
+                <option value="shortest">📏 Shortest</option>
+              </select>
+            </div>
+
+            {/* Route Optimization */}
+            <div>
+              <label className="text-gray-400 block mb-1">Route Type:</label>
+              <select 
+                value={routeOptimization}
+                onChange={(e) => setRouteOptimization(e.target.value as any)}
+                className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-xs"
+              >
+                <option value="single">📍 Single Route</option>
+                <option value="multi">🔄 Multi-Point</option>
+                <option value="roundtrip">🔄 Round Trip</option>
+              </select>
+            </div>
+
+            {/* Route Options */}
+            <div className="flex gap-4">
+              <label className="flex items-center gap-1 text-gray-400">
+                <input 
+                  type="checkbox" 
+                  checked={routeTraffic}
+                  onChange={(e) => setRouteTraffic(e.target.checked)}
+                  className="w-3 h-3"
+                />
+                Traffic
+              </label>
+              <label className="flex items-center gap-1 text-gray-400">
+                <input 
+                  type="checkbox" 
+                  checked={routeTolls}
+                  onChange={(e) => setRouteTolls(e.target.checked)}
+                  className="w-3 h-3"
+                />
+                Tolls
+              </label>
+            </div>
+
+            {/* Route Points */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-gray-400">Route Points:</span>
+                <span className="text-blue-400">{routePoints.length}</span>
+              </div>
+              {routePoints.length > 0 && (
+                <div className="max-h-20 overflow-y-auto space-y-1">
+                  {routePoints.map((point, index) => (
+                    <div key={index} className="text-xs text-gray-300">
+                      {index + 1}. {point[1].toFixed(4)}, {point[0].toFixed(4)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Route Actions */}
+            <div className="flex gap-2 pt-2 border-t border-gray-600">
+              <button
+                onClick={clearRoutePoints}
+                className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded"
+              >
+                Clear
+              </button>
+              {routePoints.length >= 3 && (
+                <button
+                  onClick={() => optimizeRoute(routePoints)}
+                  className="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                >
+                  Optimize
+                </button>
+              )}
+              {isCalculatingRoute && (
+                <div className="flex items-center gap-1 text-yellow-400 text-xs">
+                  <div className="animate-spin rounded-full h-3 w-3 border-b border-yellow-400"></div>
+                  Calculating...
+                </div>
+              )}
+            </div>
+
+            {/* Route Statistics */}
+            {routes.length > 0 && (
+              <div className="pt-2 border-t border-gray-600">
+                <div className="text-xs text-gray-400 mb-1">Route Statistics:</div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Total Routes:</span>
+                    <span className="text-white">{routes.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Total Distance:</span>
+                    <span className="text-white">
+                      {routes.reduce((sum, route) => sum + (route.distance || 0), 0).toFixed(1)} km
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Total Duration:</span>
+                    <span className="text-white">
+                      {Math.round(routes.reduce((sum, route) => sum + (route.duration || 0), 0) / 60)} min
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Route Alternatives */}
+            {routeAlternatives.length > 0 && (
+              <div className="pt-2 border-t border-gray-600">
+                <div className="text-xs text-gray-400 mb-1">Alternative Routes:</div>
+                <div className="space-y-1">
+                  {routeAlternatives.map((route, index) => (
+                    <button
+                      key={index}
+                      onClick={() => selectRouteAlternative(index)}
+                      className={`w-full text-left px-2 py-1 rounded text-xs ${
+                        selectedRouteIndex === index 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      {route.mode}: {route.distance?.toFixed(1)}km, {Math.round((route.duration || 0) / 60)}min
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

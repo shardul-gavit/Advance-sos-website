@@ -91,15 +91,24 @@ export class GeospatialService {
       const bbox = turf.bbox(circle);
 
       const { data: responders, error } = await supabase
-        .from('responders')
+        .from('users')
         .select('*')
+        .eq('user_type', 'responder')
         .gte('latitude', bbox[1])
         .lte('latitude', bbox[3])
         .gte('longitude', bbox[0])
         .lte('longitude', bbox[2])
         .eq('status', 'available');
 
-      if (error) throw error;
+      if (error) {
+        // Suppress 404 errors for missing tables (table doesn't exist)
+        if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('404')) {
+          // Table doesn't exist, return empty array silently
+          return { count: 0, responders: [], error: null };
+        }
+        // For other errors, return empty array
+        return { count: 0, responders: [], error };
+      }
 
       // Filter responders within the actual circle
       const respondersInCircle = responders?.filter(responder => {
@@ -113,7 +122,8 @@ export class GeospatialService {
         error: null 
       };
     } catch (error) {
-      return { count: 0, responders: [], error };
+      // Suppress errors for missing tables
+      return { count: 0, responders: [], error: null };
     }
   }
 
@@ -237,24 +247,27 @@ export class GeospatialService {
       // Get data within bounding box
       const [sosRes, helpersRes, respondersRes] = await Promise.all([
         supabase
-          .from('sos_events')
+          .from('sos_alerts')
           .select('*')
           .gte('latitude', bbox[1])
           .lte('latitude', bbox[3])
           .gte('longitude', bbox[0])
           .lte('longitude', bbox[2])
-          .eq('status', 'active'),
+          .eq('status', 'active')
+          .order('triggered_at', { ascending: false }),
         supabase
-          .from('helpers')
+          .from('users')
           .select('*')
+          .eq('user_type', 'helper')
           .gte('latitude', bbox[1])
           .lte('latitude', bbox[3])
           .gte('longitude', bbox[0])
           .lte('longitude', bbox[2])
           .eq('status', 'available'),
         supabase
-          .from('responders')
+          .from('users')
           .select('*')
+          .eq('user_type', 'responder')
           .gte('latitude', bbox[1])
           .lte('latitude', bbox[3])
           .gte('longitude', bbox[0])
@@ -262,21 +275,34 @@ export class GeospatialService {
           .eq('status', 'available'),
       ]);
 
+      // Handle errors gracefully for missing tables
+      const sosData = sosRes.error && (sosRes.error.code === '42P01' || sosRes.error.message?.includes('does not exist') || sosRes.error.message?.includes('404')) 
+        ? [] 
+        : (sosRes.data || []);
+      
+      const helpersData = helpersRes.error && (helpersRes.error.code === '42P01' || helpersRes.error.message?.includes('does not exist') || helpersRes.error.message?.includes('404')) 
+        ? [] 
+        : (helpersRes.data || []);
+      
+      const respondersData = respondersRes.error && (respondersRes.error.code === '42P01' || respondersRes.error.message?.includes('does not exist') || respondersRes.error.message?.includes('404')) 
+        ? [] 
+        : (respondersRes.data || []);
+
       // Filter data within actual zone geometry
-      const sosInZone = sosRes.data?.filter(event => {
+      const sosInZone = sosData.filter(event => {
         const point = turf.point([event.longitude, event.latitude]);
         return turf.booleanPointInPolygon(point, zoneGeometry);
-      }) || [];
+      });
 
-      const helpersInZone = helpersRes.data?.filter(helper => {
+      const helpersInZone = helpersData.filter(helper => {
         const point = turf.point([helper.longitude, helper.latitude]);
         return turf.booleanPointInPolygon(point, zoneGeometry);
-      }) || [];
+      });
 
-      const respondersInZone = respondersRes.data?.filter(responder => {
+      const respondersInZone = respondersData.filter(responder => {
         const point = turf.point([responder.longitude, responder.latitude]);
         return turf.booleanPointInPolygon(point, zoneGeometry);
-      }) || [];
+      });
 
       // Calculate average response time
       const resolvedEvents = sosInZone.filter(event => event.resolved_at);

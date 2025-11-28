@@ -1,0 +1,221 @@
+{
+  "timestamp": "2025-07-22T08:24:36.766Z",
+  "summary": {
+    "total": 42,
+    "passed": 36,
+    "failed": 6,
+    "successRate": "85.7%"
+  },
+  "details": [
+    {
+      "testName": "Location Service File",
+      "passed": true,
+      "details": "Location service file exists"
+    },
+    {
+      "testName": "getCurrentLocation Function",
+      "passed": true,
+      "details": "Function found"
+    },
+    {
+      "testName": "getQuickLocation Function",
+      "passed": true,
+      "details": "Function found"
+    },
+    {
+      "testName": "Location Tracking Function",
+      "passed": true,
+      "details": "Function found"
+    },
+    {
+      "testName": "Geolocation API Usage",
+      "passed": true,
+      "details": "API usage found"
+    },
+    {
+      "testName": "Location Context File",
+      "passed": true,
+      "details": "Location context file exists"
+    },
+    {
+      "testName": "Location Provider",
+      "passed": true,
+      "details": "Provider found"
+    },
+    {
+      "testName": "useLocation Hook",
+      "passed": true,
+      "details": "Hook found"
+    },
+    {
+      "testName": "Permission Request",
+      "passed": true,
+      "details": "Permission request found"
+    },
+    {
+      "testName": "AdminMap.tsx File",
+      "passed": true,
+      "details": "Map component file exists"
+    },
+    {
+      "testName": "AdminMap.tsx Mapbox Integration",
+      "passed": true,
+      "details": "Mapbox integration found"
+    },
+    {
+      "testName": "AdminMap.tsx React Map GL",
+      "passed": false,
+      "details": "React Map GL missing"
+    },
+    {
+      "testName": "AdminMap.tsx Map Component",
+      "passed": true,
+      "details": "Map component found"
+    },
+    {
+      "testName": "EnhancedAdminMap.tsx File",
+      "passed": true,
+      "details": "Map component file exists"
+    },
+    {
+      "testName": "EnhancedAdminMap.tsx Mapbox Integration",
+      "passed": true,
+      "details": "Mapbox integration found"
+    },
+    {
+      "testName": "EnhancedAdminMap.tsx React Map GL",
+      "passed": false,
+      "details": "React Map GL missing"
+    },
+    {
+      "testName": "EnhancedAdminMap.tsx Map Component",
+      "passed": true,
+      "details": "Map component found"
+    },
+    {
+      "testName": "LocationMap.tsx File",
+      "passed": true,
+      "details": "Map component file exists"
+    },
+    {
+      "testName": "LocationMap.tsx Mapbox Integration",
+      "passed": true,
+      "details": "Mapbox integration found"
+    },
+    {
+      "testName": "LocationMap.tsx React Map GL",
+      "passed": true,
+      "details": "React Map GL found"
+    },
+    {
+      "testName": "LocationMap.tsx Map Component",
+      "passed": true,
+      "details": "Map component found"
+    },
+    {
+      "testName": "Mapbox Configuration File",
+      "passed": true,
+      "details": "Mapbox config file exists"
+    },
+    {
+      "testName": "location-status.tsx File",
+      "passed": true,
+      "details": "UI component file exists"
+    },
+    {
+      "testName": "location-permission.tsx File",
+      "passed": true,
+      "details": "UI component file exists"
+    },
+    {
+      "testName": "location-performance.tsx File",
+      "passed": true,
+      "details": "UI component file exists"
+    },
+    {
+      "testName": "Package Dependencies",
+      "passed": true,
+      "details": "All required dependencies present"
+    },
+    {
+      "testName": "Environment File",
+      "passed": false,
+      "details": ".env file missing"
+    },
+    {
+      "testName": "Environment Example",
+      "passed": true,
+      "details": "env.example file exists"
+    },
+    {
+      "testName": "VITE_SUPABASE_URL Environment Variable",
+      "passed": false,
+      "details": "Environment variable not set"
+    },
+    {
+      "testName": "VITE_SUPABASE_ANON_KEY Environment Variable",
+      "passed": false,
+      "details": "Environment variable not set"
+    },
+    {
+      "testName": "VITE_MAPBOX_ACCESS_TOKEN Environment Variable",
+      "passed": false,
+      "details": "Environment variable not set"
+    },
+    {
+      "testName": "vite.config.ts File",
+      "passed": true,
+      "details": "Config file exists"
+    },
+    {
+      "testName": "tsconfig.json File",
+      "passed": true,
+      "details": "Config file exists"
+    },
+    {
+      "testName": "tailwind.config.ts File",
+      "passed": true,
+      "details": "Config file exists"
+    },
+    {
+      "testName": "App.tsx File",
+      "passed": true,
+      "details": "Main file exists"
+    },
+    {
+      "testName": "main.tsx File",
+      "passed": true,
+      "details": "Main file exists"
+    },
+    {
+      "testName": "index.html File",
+      "passed": true,
+      "details": "Main file exists"
+    },
+    {
+      "testName": "Index.tsx File",
+      "passed": true,
+      "details": "Main file exists"
+    },
+    {
+      "testName": "Quick Location Function",
+      "passed": true,
+      "details": "Quick location function found"
+    },
+    {
+      "testName": "Timeout Optimization",
+      "passed": true,
+      "details": "Timeout optimization found"
+    },
+    {
+      "testName": "High Accuracy Options",
+      "passed": true,
+      "details": "High accuracy options found"
+    },
+    {
+      "testName": "Async Geocoding",
+      "passed": true,
+      "details": "Async geocoding found"
+    }
+  ]
+}

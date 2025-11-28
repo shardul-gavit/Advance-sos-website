@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-07-22T02:59:08.541Z",
+  "summary": {
+    "total": 9,
+    "passed": 7,
+    "failed": 2,
+    "successRate": "77.8"
+  },
+  "details": [
+    {
+      "testName": "MediaPlayer Component",
+      "passed": true,
+      "details": "Component syntax valid"
+    },
+    {
+      "testName": "MediaUpload Component",
+      "passed": true,
+      "details": "Component syntax valid"
+    },
+    {
+      "testName": "EnhancedAdminMap Component",
+      "passed": true,
+      "details": "Component syntax valid"
+    },
+    {
+      "testName": "TestMode Component",
+      "passed": true,
+      "details": "Component syntax valid"
+    },
+    {
+      "testName": "Firebase Service",
+      "passed": true,
+      "details": "Service syntax valid"
+    },
+    {
+      "testName": "Distance Service",
+      "passed": true,
+      "details": "Service syntax valid"
+    },
+    {
+      "testName": "Import Statements",
+      "passed": true,
+      "details": "All imports valid"
+    },
+    {
+      "testName": "TypeScript Config",
+      "passed": false,
+      "details": "Missing:  jsx "
+    },
+    {
+      "testName": "Vite Config",
+      "passed": false,
+      "details": "Missing:   path alias"
+    }
+  ]
+}

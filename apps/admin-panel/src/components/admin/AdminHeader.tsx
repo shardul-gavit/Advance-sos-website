@@ -17,7 +17,7 @@ const AdminHeader = () => {
       <div className="flex items-center gap-2">
         <div className="w-3 h-3 bg-hud-red rounded-full animate-pulse"></div>
         <h1 className="text-xl font-bold uppercase tracking-widest text-hud-cyan">
-          A.S.H. Command
+          Advance SOS Max
         </h1>
       </div>
       <div className="flex items-center gap-6 text-sm">

@@ -1,0 +1,176 @@
+{
+  "timestamp": "2025-07-22T03:20:31.517Z",
+  "summary": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "successRate": "100.0"
+  },
+  "details": [
+    {
+      "testName": "Geospatial View Panel",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "SOS MAP Button",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "LOCATION MANAGER Button",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "SUPABASE MAP Button",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Map View State Management",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Map View Handlers",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Map Status Indicator",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "EnhancedAdminMap Integration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Mapbox Integration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Marker Clustering",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Marker Management",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Popup Functionality",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Map Animations",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Globe Projection",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Zone Management",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "GeoSweep Functionality",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Routing Functionality",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Isochrone Functionality",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Clustering Analysis",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Distance Calculations",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "MAPBOX_CONFIG Object",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Mapbox Validation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Clustering Configuration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Marker Configuration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Mapbox Utilities",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Location Management UI",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Map Click Handling",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Real-time Updates",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Location Markers",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "GeoSweep Features",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Zone Drawing",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Advanced Routing",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "testName": "Isochrone Analysis",
+      "passed": true,
+      "details": ""
+    }
+  ]
+}

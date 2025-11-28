@@ -18,24 +18,24 @@ export class RealtimeService {
   subscribeToAll(callbacks: RealtimeCallbacks) {
     this.callbacks = callbacks;
 
-    // Subscribe to SOS events
+    // Subscribe to SOS alerts (correct table name)
     const sosChannel = supabase
-      .channel('sos_events_changes')
+      .channel('sos_alerts_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'sos_events',
+          table: 'sos_alerts',
         },
         (payload) => {
-          console.log('SOS Event change:', payload);
+          console.log('SOS Alert change:', payload);
           this.callbacks.onSOSEvent?.(payload);
         }
       )
       .subscribe();
 
-    // Subscribe to helpers
+    // Subscribe to helpers (from users table with user_type='helper')
     const helperChannel = supabase
       .channel('helpers_changes')
       .on(
@@ -43,7 +43,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'helpers',
+          table: 'users',
+          filter: 'user_type=eq.helper',
         },
         (payload) => {
           console.log('Helper change:', payload);
@@ -52,7 +53,7 @@ export class RealtimeService {
       )
       .subscribe();
 
-    // Subscribe to responders
+    // Subscribe to responders (from users table with user_type='responder')
     const responderChannel = supabase
       .channel('responders_changes')
       .on(
@@ -60,7 +61,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'responders',
+          table: 'users',
+          filter: 'user_type=eq.responder',
         },
         (payload) => {
           console.log('Responder change:', payload);
@@ -69,7 +71,7 @@ export class RealtimeService {
       )
       .subscribe();
 
-    // Subscribe to hospitals
+    // Subscribe to hospitals (from emergency_services table with type='hospital')
     const hospitalChannel = supabase
       .channel('hospitals_changes')
       .on(
@@ -77,7 +79,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'hospitals',
+          table: 'emergency_services',
+          filter: 'type=eq.hospital',
         },
         (payload) => {
           console.log('Hospital change:', payload);
@@ -86,18 +89,18 @@ export class RealtimeService {
       )
       .subscribe();
 
-    // Subscribe to media
+    // Subscribe to sos_media (correct table name)
     const mediaChannel = supabase
-      .channel('media_changes')
+      .channel('sos_media_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'media',
+          table: 'sos_media',
         },
         (payload) => {
-          console.log('Media change:', payload);
+          console.log('SOS Media change:', payload);
           this.callbacks.onMedia?.(payload);
         }
       )
@@ -120,7 +123,7 @@ export class RealtimeService {
       )
       .subscribe();
 
-    // Subscribe to locations
+    // Subscribe to locations (from responder_location_history table)
     const locationChannel = supabase
       .channel('locations_changes')
       .on(
@@ -128,7 +131,7 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'locations',
+          table: 'responder_location_history',
         },
         (payload) => {
           console.log('Location change:', payload);
@@ -150,13 +153,13 @@ export class RealtimeService {
 
   subscribeToSOSEvents(callback: (payload: any) => void) {
     const channel = supabase
-      .channel('sos_events_changes')
+      .channel('sos_alerts_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'sos_events',
+          table: 'sos_alerts',
         },
         callback
       )
@@ -174,7 +177,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'helpers',
+          table: 'users',
+          filter: 'user_type=eq.helper',
         },
         callback
       )
@@ -192,7 +196,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'responders',
+          table: 'users',
+          filter: 'user_type=eq.responder',
         },
         callback
       )
@@ -210,7 +215,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'hospitals',
+          table: 'emergency_services',
+          filter: 'type=eq.hospital',
         },
         callback
       )
@@ -222,13 +228,13 @@ export class RealtimeService {
 
   subscribeToMedia(callback: (payload: any) => void) {
     const channel = supabase
-      .channel('media_changes')
+      .channel('sos_media_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'media',
+          table: 'sos_media',
         },
         callback
       )
@@ -264,7 +270,7 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'locations',
+          table: 'responder_location_history',
         },
         callback
       )
@@ -274,16 +280,16 @@ export class RealtimeService {
     return channel;
   }
 
-  // Subscribe to specific SOS event
+  // Subscribe to specific SOS alert
   subscribeToSOSEvent(sosEventId: string, callback: (payload: any) => void) {
     const channel = supabase
-      .channel(`sos_event_${sosEventId}`)
+      .channel(`sos_alert_${sosEventId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'sos_events',
+          table: 'sos_alerts',
           filter: `id=eq.${sosEventId}`,
         },
         callback
@@ -303,7 +309,7 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'helpers',
+          table: 'users',
           filter: `id=eq.${helperId}`,
         },
         callback
@@ -323,7 +329,7 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'responders',
+          table: 'users',
           filter: `id=eq.${responderId}`,
         },
         callback
@@ -354,7 +360,7 @@ export class RealtimeService {
     return channel;
   }
 
-  // Subscribe to user locations
+  // Subscribe to user locations (from users table)
   subscribeToUserLocations(userId: string, callback: (payload: any) => void) {
     const channel = supabase
       .channel(`user_locations_${userId}`)
@@ -363,8 +369,8 @@ export class RealtimeService {
         {
           event: '*',
           schema: 'public',
-          table: 'locations',
-          filter: `user_id=eq.${userId}`,
+          table: 'users',
+          filter: `id=eq.${userId}`,
         },
         callback
       )
@@ -374,17 +380,17 @@ export class RealtimeService {
     return channel;
   }
 
-  // Subscribe to media for specific SOS event
+  // Subscribe to media for specific SOS alert
   subscribeToSOSEventMedia(sosEventId: string, callback: (payload: any) => void) {
     const channel = supabase
-      .channel(`sos_event_media_${sosEventId}`)
+      .channel(`sos_alert_media_${sosEventId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'media',
-          filter: `sos_event_id=eq.${sosEventId}`,
+          table: 'sos_media',
+          filter: `sos_alert_id=eq.${sosEventId}`,
         },
         callback
       )

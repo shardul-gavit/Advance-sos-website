@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-10-01T10:17:24.741Z",
+  "tests": [
+    {
+      "name": "RealtimeService Table Names",
+      "status": "pass",
+      "message": "All table names are correct",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.743Z"
+    },
+    {
+      "name": "RealtimeService Channel Names",
+      "status": "pass",
+      "message": "Channel names are consistent",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.744Z"
+    },
+    {
+      "name": "SOSDataService Subscription",
+      "status": "pass",
+      "message": "Subscription method is properly configured",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.745Z"
+    },
+    {
+      "name": "Main Dashboard Subscriptions",
+      "status": "pass",
+      "message": "Dashboard has proper real-time subscriptions",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.747Z"
+    },
+    {
+      "name": "SOS History Dashboard Subscriptions",
+      "status": "pass",
+      "message": "History dashboard uses correct subscription service",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.755Z"
+    },
+    {
+      "name": "RealtimeSOSDashboard Subscriptions",
+      "status": "pass",
+      "message": "Realtime dashboard uses correct subscription service",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.759Z"
+    },
+    {
+      "name": "HLS Player Dashboard Subscriptions",
+      "status": "pass",
+      "message": "HLS player has proper subscriptions",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.763Z"
+    },
+    {
+      "name": "Subscription Consistency",
+      "status": "pass",
+      "message": "All subscriptions use consistent naming",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.795Z"
+    },
+    {
+      "name": "Error Handling & Cleanup",
+      "status": "warning",
+      "message": "Missing some error handling or cleanup",
+      "details": "Error Handling: false, Unsubscribe: true, Channel Cleanup: true",
+      "timestamp": "2025-10-01T10:17:24.797Z"
+    },
+    {
+      "name": "sos_alerts Subscription Coverage",
+      "status": "warning",
+      "message": "sos_alerts subscription missing or incomplete",
+      "details": "Table: true, Method: false",
+      "timestamp": "2025-10-01T10:17:24.802Z"
+    },
+    {
+      "name": "sos_media Subscription Coverage",
+      "status": "warning",
+      "message": "sos_media subscription missing or incomplete",
+      "details": "Table: true, Method: false",
+      "timestamp": "2025-10-01T10:17:24.805Z"
+    },
+    {
+      "name": "helpers Subscription Coverage",
+      "status": "pass",
+      "message": "helpers subscription is implemented",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.806Z"
+    },
+    {
+      "name": "responders Subscription Coverage",
+      "status": "pass",
+      "message": "responders subscription is implemented",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.806Z"
+    },
+    {
+      "name": "hospitals Subscription Coverage",
+      "status": "pass",
+      "message": "hospitals subscription is implemented",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.807Z"
+    },
+    {
+      "name": "users Subscription Coverage",
+      "status": "pass",
+      "message": "users subscription is implemented",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.809Z"
+    },
+    {
+      "name": "locations Subscription Coverage",
+      "status": "pass",
+      "message": "locations subscription is implemented",
+      "details": null,
+      "timestamp": "2025-10-01T10:17:24.816Z"
+    }
+  ],
+  "summary": {
+    "total": 16,
+    "passed": 13,
+    "failed": 0,
+    "warnings": 3
+  }
+}

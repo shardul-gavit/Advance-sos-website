@@ -399,7 +399,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ className }) => {
       <header className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-cyan-400">A.S.H. COMMAND</h1>
+            <h1 className="text-xl font-bold text-cyan-400">Advance SOS Max</h1>
           </div>
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">

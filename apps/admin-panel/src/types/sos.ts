@@ -5,18 +5,28 @@ export type HelperStatus = 'available' | 'busy' | 'offline';
 export interface SOSEvent {
   id: string;
   user_id: string;
+  emergency_type: EmergencyType;
+  status: SOSStatus;
+  priority: string;
   latitude: number;
   longitude: number;
   address: string | null;
-  emergency_type: EmergencyType;
-  status: SOSStatus;
+  city: string | null;
+  country: string | null;
   description: string | null;
-  priority: number;
-  assigned_helper_id: string | null;
-  assigned_responder_id: string | null;
+  severity: string | null;
+  is_test: boolean;
+  last_status_message: string | null;
+  triggered_at: string;
+  last_media_update: string | null;
+  last_status_update: string | null;
   resolved_at: string | null;
-  created_at: string;
   updated_at: string;
+  resolution_notes: string | null;
+  resolved_by: string | null;
+  device_info: any | null;
+  app_version: string | null;
+  created_at: string;
   user?: {
     name: string;
     phone: string;
@@ -34,6 +44,9 @@ export interface SOSEvent {
     organization: string;
   };
   media?: Media[];
+  // Legacy fields for backward compatibility
+  assigned_helper_id?: string | null;
+  assigned_responder_id?: string | null;
 }
 
 export interface Helper {
@@ -184,8 +197,12 @@ export interface EmergencyContact {
   id: string;
   user_id: string;
   name: string;
-  phone: string;
+  phone_number: string;
+  email: string | null;
   relationship: string;
   is_primary: boolean;
   created_at: string;
+  updated_at: string;
+  // Legacy field for backward compatibility
+  phone?: string;
 } 

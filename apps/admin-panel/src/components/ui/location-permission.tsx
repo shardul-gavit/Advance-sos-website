@@ -22,18 +22,18 @@ const LocationPermission: React.FC<LocationPermissionProps> = ({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
     >
-      <Card className="w-full max-w-md bg-gray-900 border-gray-700 text-white">
+      <Card className="w-full max-w-md bg-gray-900 border-gray-700 text-white shadow-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
-            <MapPin className="w-8 h-8 text-white" />
+          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mb-4 animate-pulse">
+            <MapPin className="w-10 h-10 text-white" />
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            Enable Location Access
+            Location Access Required
           </CardTitle>
           <CardDescription className="text-gray-300 mt-2">
-            Get real-time city map and emergency services based on your location
+            This app requires location access for emergency services and real-time features
           </CardDescription>
         </CardHeader>
         
@@ -79,11 +79,11 @@ const LocationPermission: React.FC<LocationPermissionProps> = ({
             <Button
               onClick={onGrantPermission}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3"
+              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-4 text-lg"
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Getting Location...
                 </div>
               ) : (
@@ -94,15 +94,17 @@ const LocationPermission: React.FC<LocationPermissionProps> = ({
             <Button
               onClick={onSkip}
               variant="ghost"
-              className="w-full text-gray-400 hover:text-white hover:bg-gray-800"
+              className="w-full text-gray-400 hover:text-white hover:bg-gray-800 py-3"
             >
               Skip for now
             </Button>
           </div>
           
-          <p className="text-xs text-gray-500 text-center">
-            You can enable location access later in settings
-          </p>
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              You can enable location access later in settings
+            </p>
+          </div>
         </CardContent>
       </Card>
     </motion.div>

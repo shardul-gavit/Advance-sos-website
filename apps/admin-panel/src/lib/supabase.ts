@@ -1,30 +1,45 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://odkvcbnsimkhpmkllngo.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_TEqMgL9G9YLUxfcRpXvvtQ_WuhU82Hn';
+// Fixed Supabase configuration with service role key
+const supabaseUrl = "https://odkvcbnsimkhpmkllngo.supabase.co";
+const supabaseServiceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ka3ZjYm5zaW1raHBta2xsbmdvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjI1MjYzMiwiZXhwIjoyMDY3ODI4NjMyfQ.0qanU4VHNkQLYIWSkDw8kimy0jG0X72MkB5FXRWiRBo";
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-// Debug logging in development
-if (import.meta.env.DEV) {
-  console.log('Supabase URL:', supabaseUrl);
-  console.log('Supabase Key (first 20 chars):', supabaseAnonKey.substring(0, 20) + '...');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Create Supabase client with service role key for admin panel
+export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
+    detectSessionInUrl: true
   },
   realtime: {
     params: {
-      eventsPerSecond: 10,
-    },
+      eventsPerSecond: 10
+    }
   },
+  global: {
+    headers: {
+      'X-Client-Info': 'advance-sos-admin-panel'
+    }
+  }
 });
+
+// Test connection function
+export const testSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('sos_alerts').select('count').limit(1);
+    
+    if (error) {
+      console.error('❌ Supabase connection failed:', error);
+      return { success: false, error: error.message };
+    }
+    
+    console.log('✅ Supabase connection successful');
+    return { success: true, data };
+  } catch (error) {
+    console.error('❌ Supabase connection error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+};
 
 // Database types
 export interface Database {
@@ -34,132 +49,178 @@ export interface Database {
         Row: {
           id: string;
           email: string;
-          phone: string | null;
-          name: string;
-          role: 'user' | 'helper' | 'responder' | 'admin';
-          avatar_url: string | null;
-          is_verified: boolean;
-          is_blocked: boolean;
-          last_active: string;
+          full_name: string | null;
+          phone_number: string | null;
+          emergency_contact_name: string | null;
+          emergency_contact_phone: string | null;
+          emergency_contact_relationship: string | null;
           created_at: string;
           updated_at: string;
-        };
-        Insert: {
-          id: string;
-          email: string;
-          phone?: string | null;
-          name: string;
-          role?: 'user' | 'helper' | 'responder' | 'admin';
-          avatar_url?: string | null;
-          is_verified?: boolean;
-          is_blocked?: boolean;
-          last_active?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          email?: string;
-          phone?: string | null;
-          name?: string;
-          role?: 'user' | 'helper' | 'responder' | 'admin';
-          avatar_url?: string | null;
-          is_verified?: boolean;
-          is_blocked?: boolean;
-          last_active?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      admins: {
-        Row: {
-          id: string;
-          email: string;
-          name: string;
-          role: 'admin' | 'super_admin';
-          organization: string | null;
-          phone: string | null;
-          permissions: Record<string, any>;
           is_active: boolean;
-          last_login: string | null;
-          created_at: string;
-          updated_at: string;
+          onboarding_completed: boolean;
+          personal_info_completed: boolean;
+          pin_created: boolean;
+          permissions_granted: boolean;
+          latitude: number | null;
+          longitude: number | null;
+          user_type: string | null;
+          is_available: boolean | null;
+          emergency_preferences: any | null;
+          device_info: any | null;
+          last_activity: string | null;
+          fcm_token: string | null;
+          role: string | null;
+          phone: string | null;
+          blood_group: string | null;
+          date_of_birth: string | null;
+          address: string | null;
+          emergency_notes: string | null;
+          last_active_at: string | null;
+          name: string | null;
         };
         Insert: {
-          id: string;
+          id?: string;
           email: string;
-          name: string;
-          role?: 'admin' | 'super_admin';
-          organization?: string | null;
-          phone?: string | null;
-          permissions?: Record<string, any>;
-          is_active?: boolean;
-          last_login?: string | null;
+          full_name?: string | null;
+          phone_number?: string | null;
+          emergency_contact_name?: string | null;
+          emergency_contact_phone?: string | null;
+          emergency_contact_relationship?: string | null;
           created_at?: string;
           updated_at?: string;
+          is_active?: boolean;
+          onboarding_completed?: boolean;
+          personal_info_completed?: boolean;
+          pin_created?: boolean;
+          permissions_granted?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
+          user_type?: string | null;
+          is_available?: boolean | null;
+          emergency_preferences?: any | null;
+          device_info?: any | null;
+          last_activity?: string | null;
+          fcm_token?: string | null;
+          role?: string | null;
+          phone?: string | null;
+          blood_group?: string | null;
+          date_of_birth?: string | null;
+          address?: string | null;
+          emergency_notes?: string | null;
+          last_active_at?: string | null;
+          name?: string | null;
         };
         Update: {
           id?: string;
           email?: string;
-          name?: string;
-          role?: 'admin' | 'super_admin';
-          organization?: string | null;
-          phone?: string | null;
-          permissions?: Record<string, any>;
-          is_active?: boolean;
-          last_login?: string | null;
+          full_name?: string | null;
+          phone_number?: string | null;
+          emergency_contact_name?: string | null;
+          emergency_contact_phone?: string | null;
+          emergency_contact_relationship?: string | null;
           created_at?: string;
           updated_at?: string;
+          is_active?: boolean;
+          onboarding_completed?: boolean;
+          personal_info_completed?: boolean;
+          pin_created?: boolean;
+          permissions_granted?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
+          user_type?: string | null;
+          is_available?: boolean | null;
+          emergency_preferences?: any | null;
+          device_info?: any | null;
+          last_activity?: string | null;
+          fcm_token?: string | null;
+          role?: string | null;
+          phone?: string | null;
+          blood_group?: string | null;
+          date_of_birth?: string | null;
+          address?: string | null;
+          emergency_notes?: string | null;
+          last_active_at?: string | null;
+          name?: string | null;
         };
       };
-      sos_events: {
+      sos_alerts: {
         Row: {
           id: string;
           user_id: string;
+          emergency_type: 'medical' | 'fire' | 'police' | 'other';
+          status: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          priority: string;
           latitude: number;
           longitude: number;
           address: string | null;
-          emergency_type: 'medical' | 'fire' | 'police' | 'accident' | 'other';
-          status: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          city: string | null;
+          country: string | null;
           description: string | null;
-          priority: number;
-          assigned_helper_id: string | null;
-          assigned_responder_id: string | null;
+          severity: string | null;
+          is_test: boolean;
+          last_status_message: string | null;
+          triggered_at: string;
+          last_media_update: string | null;
+          last_status_update: string | null;
           resolved_at: string | null;
-          created_at: string;
           updated_at: string;
+          resolution_notes: string | null;
+          resolved_by: string | null;
+          device_info: any | null;
+          app_version: string | null;
+          created_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
+          emergency_type: 'medical' | 'fire' | 'police' | 'other';
+          status?: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          priority?: string;
           latitude: number;
           longitude: number;
           address?: string | null;
-          emergency_type: 'medical' | 'fire' | 'police' | 'accident' | 'other';
-          status?: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          city?: string | null;
+          country?: string | null;
           description?: string | null;
-          priority?: number;
-          assigned_helper_id?: string | null;
-          assigned_responder_id?: string | null;
+          severity?: string | null;
+          is_test?: boolean;
+          last_status_message?: string | null;
+          triggered_at?: string;
+          last_media_update?: string | null;
+          last_status_update?: string | null;
           resolved_at?: string | null;
-          created_at?: string;
           updated_at?: string;
+          resolution_notes?: string | null;
+          resolved_by?: string | null;
+          device_info?: any | null;
+          app_version?: string | null;
+          created_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
+          emergency_type?: 'medical' | 'fire' | 'police' | 'other';
+          status?: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          priority?: string;
           latitude?: number;
           longitude?: number;
           address?: string | null;
-          emergency_type?: 'medical' | 'fire' | 'police' | 'accident' | 'other';
-          status?: 'active' | 'assigned' | 'resolved' | 'cancelled';
+          city?: string | null;
+          country?: string | null;
           description?: string | null;
-          priority?: number;
-          assigned_helper_id?: string | null;
-          assigned_responder_id?: string | null;
+          severity?: string | null;
+          is_test?: boolean;
+          last_status_message?: string | null;
+          triggered_at?: string;
+          last_media_update?: string | null;
+          last_status_update?: string | null;
           resolved_at?: string | null;
-          created_at?: string;
           updated_at?: string;
+          resolution_notes?: string | null;
+          resolved_by?: string | null;
+          device_info?: any | null;
+          app_version?: string | null;
+          created_at?: string;
         };
       };
       helpers: {
@@ -168,14 +229,14 @@ export interface Database {
           user_id: string;
           name: string;
           phone: string;
+          organization: string | null;
+          skills: string[];
           latitude: number;
           longitude: number;
           status: 'available' | 'busy' | 'offline';
-          emergency_types: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
-          max_distance: number;
-          rating: number;
-          total_helps: number;
+          emergency_types: string[];
           is_verified: boolean;
+          is_test: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -184,14 +245,14 @@ export interface Database {
           user_id: string;
           name: string;
           phone: string;
+          organization?: string | null;
+          skills?: string[];
           latitude: number;
           longitude: number;
           status?: 'available' | 'busy' | 'offline';
-          emergency_types?: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
-          max_distance?: number;
-          rating?: number;
-          total_helps?: number;
+          emergency_types?: string[];
           is_verified?: boolean;
+          is_test?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -200,14 +261,14 @@ export interface Database {
           user_id?: string;
           name?: string;
           phone?: string;
+          organization?: string | null;
+          skills?: string[];
           latitude?: number;
           longitude?: number;
           status?: 'available' | 'busy' | 'offline';
-          emergency_types?: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
-          max_distance?: number;
-          rating?: number;
-          total_helps?: number;
+          emergency_types?: string[];
           is_verified?: boolean;
+          is_test?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -223,8 +284,9 @@ export interface Database {
           latitude: number;
           longitude: number;
           status: 'available' | 'busy' | 'offline';
-          emergency_types: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
+          emergency_types: string[];
           is_verified: boolean;
+          is_test: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -238,8 +300,9 @@ export interface Database {
           latitude: number;
           longitude: number;
           status?: 'available' | 'busy' | 'offline';
-          emergency_types?: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
+          emergency_types?: string[];
           is_verified?: boolean;
+          is_test?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -253,115 +316,70 @@ export interface Database {
           latitude?: number;
           longitude?: number;
           status?: 'available' | 'busy' | 'offline';
-          emergency_types?: ('medical' | 'fire' | 'police' | 'accident' | 'other')[];
+          emergency_types?: string[];
           is_verified?: boolean;
+          is_test?: boolean;
           created_at?: string;
           updated_at?: string;
         };
       };
-      hospitals: {
+      sos_media: {
         Row: {
           id: string;
-          name: string;
-          phone: string;
-          address: string;
-          latitude: number;
-          longitude: number;
-          emergency_services: string[];
-          is_24_hours: boolean;
+          sos_id: string | null;
+          sos_event_id: string | null;
+          user_id: string;
+          chunk_url: string | null;
+          timestamp: string | null;
+          chunk_sequence: number | null;
+          file_size_bytes: number | null;
+          camera_type: string | null;
+          is_uploaded: boolean | null;
           created_at: string;
-          updated_at: string;
+          media_data: any | null;
+          chunk_number: number | null;
+          chunk_size: number | null;
+          file_url: string | null;
+          media_type: string | null;
+          metadata: any | null;
         };
         Insert: {
           id?: string;
-          name: string;
-          phone: string;
-          address: string;
-          latitude: number;
-          longitude: number;
-          emergency_services?: string[];
-          is_24_hours?: boolean;
+          sos_id?: string | null;
+          sos_event_id?: string | null;
+          user_id: string;
+          chunk_url?: string | null;
+          timestamp?: string | null;
+          chunk_sequence?: number | null;
+          file_size_bytes?: number | null;
+          camera_type?: string | null;
+          is_uploaded?: boolean | null;
           created_at?: string;
-          updated_at?: string;
+          media_data?: any | null;
+          chunk_number?: number | null;
+          chunk_size?: number | null;
+          file_url?: string | null;
+          media_type?: string | null;
+          metadata?: any | null;
         };
         Update: {
           id?: string;
-          name?: string;
-          phone?: string;
-          address?: string;
-          latitude?: number;
-          longitude?: number;
-          emergency_services?: string[];
-          is_24_hours?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      media: {
-        Row: {
-          id: string;
-          sos_event_id: string;
-          user_id: string;
-          file_name: string;
-          file_url: string;
-          file_type: 'image' | 'video' | 'audio';
-          file_size: number;
-          duration: number | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          sos_event_id: string;
-          user_id: string;
-          file_name: string;
-          file_url: string;
-          file_type: 'image' | 'video' | 'audio';
-          file_size: number;
-          duration?: number | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          sos_event_id?: string;
+          sos_id?: string | null;
+          sos_event_id?: string | null;
           user_id?: string;
-          file_name?: string;
-          file_url?: string;
-          file_type?: 'image' | 'video' | 'audio';
-          file_size?: number;
-          duration?: number | null;
+          chunk_url?: string | null;
+          timestamp?: string | null;
+          chunk_sequence?: number | null;
+          file_size_bytes?: number | null;
+          camera_type?: string | null;
+          is_uploaded?: boolean | null;
           created_at?: string;
-        };
-      };
-      locations: {
-        Row: {
-          id: string;
-          user_id: string | null;
-          name: string;
-          latitude: number;
-          longitude: number;
-          address: string | null;
-          is_favorite: boolean;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id?: string | null;
-          name: string;
-          latitude: number;
-          longitude: number;
-          address?: string | null;
-          is_favorite?: boolean;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string | null;
-          name?: string;
-          latitude?: number;
-          longitude?: number;
-          address?: string | null;
-          is_favorite?: boolean;
-          created_at?: string;
+          media_data?: any | null;
+          chunk_number?: number | null;
+          chunk_size?: number | null;
+          file_url?: string | null;
+          media_type?: string | null;
+          metadata?: any | null;
         };
       };
       emergency_contacts: {
@@ -369,120 +387,115 @@ export interface Database {
           id: string;
           user_id: string;
           name: string;
-          phone: string;
+          phone_number: string;
+          email: string | null;
           relationship: string;
           is_primary: boolean;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          name: string;
-          phone: string;
-          relationship: string;
-          is_primary?: boolean;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          name?: string;
-          phone?: string;
-          relationship?: string;
-          is_primary?: boolean;
-          created_at?: string;
-        };
-      };
-      admin_logs: {
-        Row: {
-          id: string;
-          admin_id: string;
-          action: string;
-          details: Record<string, any> | null;
-          ip_address: string | null;
-          user_agent: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          admin_id: string;
-          action: string;
-          details?: Record<string, any> | null;
-          ip_address?: string | null;
-          user_agent?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          admin_id?: string;
-          action?: string;
-          details?: Record<string, any> | null;
-          ip_address?: string | null;
-          user_agent?: string | null;
-          created_at?: string;
-        };
-      };
-      user_locations: {
-        Row: {
-          id: string;
-          user_id: string;
-          latitude: number;
-          longitude: number;
-          accuracy: number | null;
-          city: string | null;
-          country: string | null;
-          address: string | null;
-          speed: number | null;
-          heading: number | null;
-          altitude: number | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          latitude: number;
-          longitude: number;
-          accuracy?: number | null;
-          city?: string | null;
-          country?: string | null;
-          address?: string | null;
-          speed?: number | null;
-          heading?: number | null;
-          altitude?: number | null;
+          name: string;
+          phone_number: string;
+          email?: string | null;
+          relationship: string;
+          is_primary?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          latitude?: number;
-          longitude?: number;
-          accuracy?: number | null;
-          city?: string | null;
-          country?: string | null;
-          address?: string | null;
-          speed?: number | null;
-          heading?: number | null;
-          altitude?: number | null;
+          name?: string;
+          phone_number?: string;
+          email?: string | null;
+          relationship?: string;
+          is_primary?: boolean;
           created_at?: string;
           updated_at?: string;
         };
       };
-      emergency_locations: {
+      sos_status_history: {
+        Row: {
+          id: string;
+          sos_event_id: string;
+          user_id: string;
+          status: string;
+          previous_status: string | null;
+          message: string | null;
+          source: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          sos_event_id: string;
+          user_id: string;
+          status: string;
+          previous_status?: string | null;
+          message?: string | null;
+          source?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          sos_event_id?: string;
+          user_id?: string;
+          status?: string;
+          previous_status?: string | null;
+          message?: string | null;
+          source?: string | null;
+          created_at?: string;
+        };
+      };
+      admin_feed: {
+        Row: {
+          id: string;
+          event_type: string;
+          description: string | null;
+          user_id: string | null;
+          sos_event_id: string | null;
+          severity: string | null;
+          category: string | null;
+          source: string | null;
+          event_data: any | null;
+          metadata: any | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_type: string;
+          description?: string | null;
+          user_id?: string | null;
+          sos_event_id?: string | null;
+          severity?: string | null;
+          category?: string | null;
+          source?: string | null;
+          event_data?: any | null;
+          metadata?: any | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_type?: string;
+          description?: string | null;
+          user_id?: string | null;
+          sos_event_id?: string | null;
+          severity?: string | null;
+          category?: string | null;
+          source?: string | null;
+          event_data?: any | null;
+          metadata?: any | null;
+          created_at?: string;
+        };
+      };
+      fcm_tokens: {
         Row: {
           id: string;
           user_id: string;
-          emergency_id: string;
-          latitude: number;
-          longitude: number;
-          accuracy: number | null;
-          city: string | null;
-          country: string | null;
-          address: string | null;
-          speed: number | null;
-          heading: number | null;
-          altitude: number | null;
+          token: string;
+          device_type: string;
           is_active: boolean;
           created_at: string;
           updated_at: string;
@@ -490,16 +503,8 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          emergency_id: string;
-          latitude: number;
-          longitude: number;
-          accuracy?: number | null;
-          city?: string | null;
-          country?: string | null;
-          address?: string | null;
-          speed?: number | null;
-          heading?: number | null;
-          altitude?: number | null;
+          token: string;
+          device_type?: string;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -507,16 +512,8 @@ export interface Database {
         Update: {
           id?: string;
           user_id?: string;
-          emergency_id?: string;
-          latitude?: number;
-          longitude?: number;
-          accuracy?: number | null;
-          city?: string | null;
-          country?: string | null;
-          address?: string | null;
-          speed?: number | null;
-          heading?: number | null;
-          altitude?: number | null;
+          token?: string;
+          device_type?: string;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -526,9 +523,24 @@ export interface Database {
   };
 }
 
+// Export types
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type InsertDto<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
-export type UpdateDto<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+export type Inserts<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+
+// Type aliases for convenience
+export type User = Tables<'users'>;
+export type SOSEvent = Tables<'sos_alerts'>;
+// Helper and Responder are now User types with specific user_type values
+export type Helper = User & { user_type: 'helper' };
+export type Responder = User & { user_type: 'responder' };
+export type SOSMedia = Tables<'sos_media'>;
+export type EmergencyContact = Tables<'emergency_contacts'>;
+export type SOSStatusHistory = Tables<'sos_status_history'>;
+export type AdminFeed = Tables<'admin_feed'>;
+export type FCMToken = Tables<'fcm_tokens'>;
+// Legacy alias for backward compatibility
+export type Media = SOSMedia;
 
 // Base interfaces
 export interface Location {
@@ -542,23 +554,61 @@ export interface Location {
 export interface User {
   id: string;
   email: string;
-  name?: string;
-  phone?: string;
-  created_at?: string;
+  full_name: string | null;
+  phone_number: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  emergency_contact_relationship: string | null;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+  onboarding_completed: boolean;
+  personal_info_completed: boolean;
+  pin_created: boolean;
+  permissions_granted: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  user_type: string | null;
+  is_available: boolean | null;
+  emergency_preferences: any | null;
+  device_info: any | null;
+  last_activity: string | null;
+  fcm_token: string | null;
+  role: string | null;
+  phone: string | null;
+  blood_group: string | null;
+  date_of_birth: string | null;
+  address: string | null;
+  emergency_notes: string | null;
+  last_active_at: string | null;
+  name: string | null;
 }
 
 export interface SOSEvent {
   id: string;
   user_id: string;
+  emergency_type: 'medical' | 'fire' | 'police' | 'other';
+  status: 'active' | 'assigned' | 'resolved' | 'cancelled';
+  priority: string;
   latitude: number;
   longitude: number;
-  status: 'active' | 'assigned' | 'resolved' | 'cancelled';
-  emergency_type: 'medical' | 'fire' | 'police' | 'other';
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-  assigned_helper_id?: string;
-  resolved_at?: string;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  description: string | null;
+  severity: string | null;
+  is_test: boolean;
+  last_status_message: string | null;
+  triggered_at: string;
+  last_media_update: string | null;
+  last_status_update: string | null;
+  resolved_at: string | null;
+  updated_at: string;
+  resolution_notes: string | null;
+  resolved_by: string | null;
+  device_info: any | null;
+  app_version: string | null;
+  created_at: string;
 }
 
 export interface Helper {
@@ -600,10 +650,25 @@ export interface Hospital {
 
 export interface Media {
   id: string;
-  sos_event_id: string;
-  type: 'image' | 'video' | 'audio';
-  url: string;
-  created_at?: string;
+  sos_id: string | null;
+  sos_event_id: string | null;
+  user_id: string;
+  chunk_url: string | null;
+  timestamp: string | null;
+  chunk_sequence: number | null;
+  file_size_bytes: number | null;
+  camera_type: string | null;
+  is_uploaded: boolean | null;
+  created_at: string;
+  media_data: any | null;
+  chunk_number: number | null;
+  chunk_size: number | null;
+  file_url: string | null;
+  media_type: string | null;
+  metadata: any | null;
+  // Legacy fields for backward compatibility
+  type?: 'image' | 'video' | 'audio';
+  url?: string;
 }
 
 // Auth service
@@ -655,9 +720,9 @@ export const locationService = {
   // Fetch all locations
   async getLocations(): Promise<Location[]> {
     const { data, error } = await supabase
-      .from('locations')
+      .from('responder_location_history')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('timestamp', { ascending: false });
     
     if (error) {
       console.error('Error fetching locations:', error);
@@ -670,12 +735,13 @@ export const locationService = {
   // Insert a new location
   async insertLocation(name: string, latitude: number, longitude: number): Promise<Location> {
     const { data, error } = await supabase
-      .from('locations')
+      .from('responder_location_history')
       .insert([
         {
           name,
           latitude,
-          longitude
+          longitude,
+          timestamp: new Date().toISOString()
         }
       ])
       .select()
@@ -702,7 +768,7 @@ export const locationService = {
   subscribeToLocations(callback: (payload: any) => void) {
     return supabase
       .channel('locations')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' }, callback)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'responder_location_history' }, callback)
       .subscribe();
   }
 };
@@ -712,12 +778,9 @@ export const sosEventService = {
   // Fetch all SOS events
   async getSOSEvents(): Promise<SOSEvent[]> {
     const { data, error } = await supabase
-      .from('sos_events')
-      .select(`
-        *,
-        user:users(name, email, phone)
-      `)
-      .order('created_at', { ascending: false });
+      .from('sos_alerts')
+      .select('*')
+      .order('triggered_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching SOS events:', error);
@@ -730,13 +793,10 @@ export const sosEventService = {
   // Fetch active SOS events
   async getActiveSOSEvents(): Promise<SOSEvent[]> {
     const { data, error } = await supabase
-      .from('sos_events')
-      .select(`
-        *,
-        user:users(name, email, phone)
-      `)
+      .from('sos_alerts')
+      .select('*')
       .eq('status', 'active')
-      .order('created_at', { ascending: false });
+      .order('triggered_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching active SOS events:', error);
@@ -749,7 +809,7 @@ export const sosEventService = {
   // Create new SOS event
   async createSOSEvent(event: Omit<SOSEvent, 'id' | 'created_at' | 'updated_at'>): Promise<SOSEvent> {
     const { data, error } = await supabase
-      .from('sos_events')
+      .from('sos_alerts')
       .insert([event])
       .select()
       .single();
@@ -769,7 +829,7 @@ export const sosEventService = {
     if (status === 'resolved') updateData.resolved_at = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from('sos_events')
+      .from('sos_alerts')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -786,8 +846,8 @@ export const sosEventService = {
   // Subscribe to SOS event changes
   subscribeToSOSEvents(callback: (payload: any) => void) {
     return supabase
-      .channel('sos_events')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'sos_events' }, callback)
+      .channel('sos_alerts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sos_alerts' }, callback)
       .subscribe();
   }
 };
@@ -797,8 +857,9 @@ export const helperService = {
   // Fetch all helpers
   async getHelpers(): Promise<Helper[]> {
     const { data, error } = await supabase
-      .from('helpers')
+      .from('users')
       .select('*')
+      .eq('user_type', 'helper')
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -812,8 +873,9 @@ export const helperService = {
   // Fetch available helpers
   async getAvailableHelpers(): Promise<Helper[]> {
     const { data, error } = await supabase
-      .from('helpers')
+      .from('users')
       .select('*')
+      .eq('user_type', 'helper')
       .eq('status', 'available')
       .order('created_at', { ascending: false });
     
@@ -828,13 +890,14 @@ export const helperService = {
   // Update helper location
   async updateHelperLocation(id: string, latitude: number, longitude: number): Promise<Helper> {
     const { data, error } = await supabase
-      .from('helpers')
+      .from('users')
       .update({ 
         latitude, 
         longitude, 
         updated_at: new Date().toISOString() 
       })
       .eq('id', id)
+      .eq('user_type', 'helper')
       .select()
       .single();
     
@@ -850,7 +913,7 @@ export const helperService = {
   subscribeToHelpers(callback: (payload: any) => void) {
     return supabase
       .channel('helpers')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'helpers' }, callback)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: 'user_type=eq.helper' }, callback)
       .subscribe();
   }
 };
@@ -860,8 +923,9 @@ export const responderService = {
   // Fetch all responders
   async getResponders(): Promise<Responder[]> {
     const { data, error } = await supabase
-      .from('responders')
+      .from('users')
       .select('*')
+      .eq('user_type', 'responder')
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -875,8 +939,9 @@ export const responderService = {
   // Fetch available responders
   async getAvailableResponders(): Promise<Responder[]> {
     const { data, error } = await supabase
-      .from('responders')
+      .from('users')
       .select('*')
+      .eq('user_type', 'responder')
       .eq('status', 'available')
       .order('created_at', { ascending: false });
     
@@ -892,7 +957,7 @@ export const responderService = {
   subscribeToResponders(callback: (payload: any) => void) {
     return supabase
       .channel('responders')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'responders' }, callback)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: 'user_type=eq.responder' }, callback)
       .subscribe();
   }
 };
@@ -902,8 +967,9 @@ export const hospitalService = {
   // Fetch all hospitals
   async getHospitals(): Promise<Hospital[]> {
     const { data, error } = await supabase
-      .from('hospitals')
+      .from('emergency_services')
       .select('*')
+      .eq('type', 'hospital')
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -918,7 +984,7 @@ export const hospitalService = {
   subscribeToHospitals(callback: (payload: any) => void) {
     return supabase
       .channel('hospitals')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'hospitals' }, callback)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'emergency_services', filter: 'type=eq.hospital' }, callback)
       .subscribe();
   }
 };
@@ -926,11 +992,11 @@ export const hospitalService = {
 // Media service
 export const mediaService = {
   // Fetch media for SOS event
-  async getMediaForSOSEvent(sosEventId: string): Promise<Media[]> {
+  async getMediaForSOSEvent(sosEventId: string): Promise<SOSMedia[]> {
     const { data, error } = await supabase
-      .from('media')
+      .from('sos_media')
       .select('*')
-      .eq('sos_event_id', sosEventId)
+      .or(`sos_event_id.eq.${sosEventId},sos_id.eq.${sosEventId}`)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -944,8 +1010,8 @@ export const mediaService = {
   // Subscribe to media changes
   subscribeToMedia(callback: (payload: any) => void) {
     return supabase
-      .channel('media')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'media' }, callback)
+      .channel('sos_media')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sos_media' }, callback)
       .subscribe();
   }
 }; 

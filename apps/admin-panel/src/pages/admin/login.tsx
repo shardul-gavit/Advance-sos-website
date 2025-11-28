@@ -12,7 +12,7 @@ const AdminLoginPage: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-cyan-300 tracking-widest text-glow-cyan mb-2">
-            A.S.H. COMMAND
+            Advance SOS Max
           </h1>
           <p className="text-gray-400 text-sm">Emergency Response System</p>
         </div>

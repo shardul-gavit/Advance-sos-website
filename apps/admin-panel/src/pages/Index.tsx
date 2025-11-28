@@ -16,11 +16,10 @@ const Index = () => {
   const [showMapPreview, setShowMapPreview] = useState(false);
 
   useEffect(() => {
-    // Show location permission dialog if location is not available
-    if (!isLoading && !userLocation && !hasPermission) {
-      setShowLocationPermission(true);
-    }
-  }, [isLoading, userLocation, hasPermission]);
+    // Always show location permission dialog when app loads
+    // This ensures users are always prompted for location access
+    setShowLocationPermission(true);
+  }, []); // Empty dependency array - runs only once on mount
 
   useEffect(() => {
     // Show map preview when location is available

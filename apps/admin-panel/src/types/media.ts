@@ -2,14 +2,22 @@ export type MediaType = 'image' | 'video' | 'audio';
 
 export interface Media {
   id: string;
-  sos_event_id: string;
+  sos_id: string | null;
+  sos_event_id: string | null;
   user_id: string;
-  file_name: string;
-  file_url: string;
-  file_type: MediaType;
-  file_size: number;
-  duration: number | null;
+  chunk_url: string | null;
+  timestamp: string | null;
+  chunk_sequence: number | null;
+  file_size_bytes: number | null;
+  camera_type: string | null;
+  is_uploaded: boolean | null;
   created_at: string;
+  media_data: any | null;
+  chunk_number: number | null;
+  chunk_size: number | null;
+  file_url: string | null;
+  media_type: string | null;
+  metadata: any | null;
   user?: {
     name: string;
     email: string;
@@ -18,6 +26,11 @@ export interface Media {
     emergency_type: string;
     status: string;
   };
+  // Legacy fields for backward compatibility
+  file_name?: string;
+  file_type?: MediaType;
+  file_size?: number;
+  duration?: number | null;
 }
 
 export interface MediaUpload {

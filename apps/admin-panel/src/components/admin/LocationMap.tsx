@@ -13,6 +13,9 @@ import {
   XCircle
 } from 'lucide-react';
 import { locationService, Location } from '@/lib/supabase';
+import { useLocation } from '@/contexts/LocationContext';
+import { getUltraFastLocation } from '@/services/locationService';
+import MapControls from '@/components/ui/map-controls';
 
 // Mapbox access token
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiaHZtcCIsImEiOiJjbWN6MWk0OXQwdGM4MmtzMzZ4em5zNWFjIn0.bS5vNy8djudidIdQ6yYUdw';
@@ -26,7 +29,49 @@ const LocationMap: React.FC<LocationMapProps> = ({ className }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [mapRotation, setMapRotation] = useState(0);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
   const mapRef = useRef<any>(null);
+  
+  // Location context
+  const { userLocation, hasPermission, requestLocationPermission } = useLocation();
+
+  // GPS Recenter function
+  const handleGPSRecenter = async () => {
+    setIsLocationLoading(true);
+    try {
+      const location = await getUltraFastLocation();
+      
+      // Fly to user location
+      if (mapRef.current && location) {
+        mapRef.current.flyTo({
+          center: [location.lng, location.lat],
+          zoom: 15,
+          duration: 2000
+        });
+      }
+    } catch (error) {
+      console.error('GPS recenter failed:', error);
+      throw error;
+    } finally {
+      setIsLocationLoading(false);
+    }
+  };
+
+  // Compass reset function
+  const handleCompassReset = () => {
+    if (mapRef.current) {
+      mapRef.current.easeTo({
+        bearing: 0,
+        duration: 1000
+      });
+    }
+  };
+
+  // Handle map rotation
+  const handleMapRotate = (event: any) => {
+    setMapRotation(event.viewState.bearing || 0);
+  };
 
   // Load locations from Supabase
   const loadLocations = useCallback(async () => {
@@ -154,16 +199,57 @@ const LocationMap: React.FC<LocationMapProps> = ({ className }) => {
               mapLib={import('mapbox-gl')}
               mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
               initialViewState={{
-                longitude: -74.0060,
-                latitude: 40.7128,
+                longitude: userLocation?.lng || -74.0060,
+                latitude: userLocation?.lat || 40.7128,
                 zoom: 10
               }}
               style={{ width: '100%', height: '100%' }}
               mapStyle="mapbox://styles/mapbox/dark-v11"
               onClick={handleMapClick}
+              onMove={handleMapRotate}
+              dragRotate={true}
             >
-              {/* Navigation Control */}
-              <NavigationControl position="top-right" />
+              {/* Custom Map Controls */}
+              <MapControls
+                onGPSRecenter={handleGPSRecenter}
+                onCompassReset={handleCompassReset}
+                mapRotation={mapRotation}
+                isLocationLoading={isLocationLoading}
+                locationAccuracy={userLocation?.accuracy}
+                hasLocationPermission={hasPermission}
+              />
+
+              {/* Navigation Control (moved to bottom-right) */}
+              <NavigationControl position="bottom-right" />
+
+              {/* User Location Marker */}
+              {userLocation && (
+                <Marker
+                  longitude={userLocation.lng}
+                  latitude={userLocation.lat}
+                  anchor="center"
+                >
+                  <div className="relative">
+                    {/* User location indicator */}
+                    <div className="w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center animate-pulse">
+                      <MapPin className="w-4 h-4 text-white" />
+                    </div>
+                    
+                    {/* Accuracy ring */}
+                    {userLocation.accuracy && (
+                      <div 
+                        className="absolute inset-0 border-2 border-blue-400/30 rounded-full animate-ping"
+                        style={{
+                          width: `${Math.max(20, userLocation.accuracy / 2)}px`,
+                          height: `${Math.max(20, userLocation.accuracy / 2)}px`,
+                          marginLeft: `-${Math.max(10, userLocation.accuracy / 4)}px`,
+                          marginTop: `-${Math.max(10, userLocation.accuracy / 4)}px`
+                        }}
+                      />
+                    )}
+                  </div>
+                </Marker>
+              )}
 
               {/* Location Markers */}
               {locations.map((location) => (

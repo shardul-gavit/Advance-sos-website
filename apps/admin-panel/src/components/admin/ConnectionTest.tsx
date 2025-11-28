@@ -74,7 +74,7 @@ const ConnectionTest: React.FC = () => {
         name: 'Database Connection',
         test: async () => {
           try {
-            const { data, error } = await supabase.from('locations').select('count').limit(1);
+            const { data, error } = await supabase.from('responder_location_history').select('count').limit(1);
             return {
               success: !error,
               message: error ? 'Database connection failed' : 'Database connection successful',

@@ -238,7 +238,7 @@ export const GlobalOpsMode: React.FC = () => {
             </div>
           </div>
           <CardDescription>
-            Scale orchestrator logic for thousands of active users and alerts
+            Scale service logic for thousands of active users and alerts
           </CardDescription>
         </CardHeader>
         <CardContent>

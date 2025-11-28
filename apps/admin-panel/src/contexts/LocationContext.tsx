@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { LocationData, getCurrentLocation, watchLocation, stopWatchingLocation } from '@/services/locationService';
+import { LocationData, getCurrentLocation, getQuickLocation, getUltraFastLocation, alwaysRequestLocationPermission, watchLocation, stopWatchingLocation } from '@/services/locationService';
 
 interface LocationContextType {
   userLocation: LocationData | null;
@@ -30,33 +30,84 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
   const [error, setError] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [watchId, setWatchId] = useState<number>(-1);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const requestLocationPermission = async () => {
     // Prevent multiple simultaneous requests
-    if (isLoading) return;
+    if (isLoading && isInitialized) {
+      return;
+    }
     
     setIsLoading(true);
     setError(null);
     
     try {
-      const location = await getCurrentLocation();
+      // Always request permission first
+      const permissionResult = await alwaysRequestLocationPermission();
+      
+      if (!permissionResult.granted) {
+        throw new Error('Location permission denied');
+      }
+      
+      // Use ultra-fast location strategy with fallback for immediate results
+      const location = await getUltraFastLocation();
+      
       setUserLocation(location);
       setHasPermission(true);
       
       // Only start watching if not already watching
       if (watchId === -1) {
-      const newWatchId = watchLocation(
-        (updatedLocation) => {
-          setUserLocation(updatedLocation);
-        },
-        (watchError) => {
-          console.error('Location watch error:', watchError);
-          // Don't set error for watch failures, just log them
-          // This prevents the error from showing in the UI for minor tracking issues
+        try {
+          const newWatchId = await watchLocation(
+          (updatedLocation) => {
+            setUserLocation(updatedLocation);
+          },
+          (watchError) => {
+            console.error('Location watch error:', watchError);
+            // Don't set error for watch failures, just log them
+          },
+          {
+            enableHighAccuracy: true, // Use high accuracy for tracking
+            timeout: 10000,
+              maximumAge: 30000,
+              trackInSupabase: false // Don't track in Supabase from context
+          }
+        );
+        setWatchId(newWatchId);
+        } catch (trackingError) {
+          // Handle "already active" error gracefully
+          if (trackingError instanceof Error && trackingError.message.includes('already active')) {
+            console.warn('Location tracking already active, skipping...');
+            // Try to get current tracking status
+            try {
+              const { getTrackingStatus } = await import('@/services/locationService');
+              const status = getTrackingStatus();
+              if (status.watchId !== null) {
+                setWatchId(status.watchId);
+              }
+            } catch (statusError) {
+              console.warn('Could not get tracking status:', statusError);
+            }
+          } else {
+            console.error('Failed to start location tracking:', trackingError);
+            // Don't throw - just log the error so the app continues
+          }
         }
-      );
-      setWatchId(newWatchId);
       }
+      
+      // Get detailed city info in background after 300ms
+      setTimeout(async () => {
+        try {
+          const detailedLocation = await getCurrentLocation({
+            enableHighAccuracy: true,
+            timeout: 8000,
+            includeCityInfo: true
+          });
+          setUserLocation(detailedLocation);
+        } catch (error) {
+          console.log('Background city info update failed:', error);
+        }
+      }, 300);
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to get location';
@@ -69,6 +120,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
       }
     } finally {
       setIsLoading(false);
+      setIsInitialized(true);
     }
   };
 
@@ -79,13 +131,33 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
   };
 
   useEffect(() => {
-    // Automatically request location permission when the app loads
-    requestLocationPermission();
+    // Only request location permission once on mount
+    let mounted = true;
+    
+    const initLocation = async () => {
+      if (!isInitialized && mounted) {
+        try {
+          await requestLocationPermission();
+        } catch (error) {
+          console.error('Error initializing location:', error);
+          // Set fallback location on error
+          setUserLocation({ lat: 22.3072, lng: 73.1812 });
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    initLocation();
 
     // Cleanup function to stop watching location
     return () => {
-      if (watchId !== -1) {
-        stopWatchingLocation(watchId);
+      mounted = false;
+      if (watchId !== -1 && watchId !== null) {
+        try {
+          stopWatchingLocation();
+        } catch (error) {
+          console.warn('Error stopping location tracking:', error);
+        }
       }
     };
   }, []);
@@ -95,8 +167,22 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
     isLoading,
     error,
     hasPermission,
-    requestLocationPermission,
-    refreshLocation,
+    requestLocationPermission: async () => {
+      try {
+        await requestLocationPermission();
+      } catch (err) {
+        console.error('Error in requestLocationPermission:', err);
+        // Don't throw - just log
+      }
+    },
+    refreshLocation: async () => {
+      try {
+        await refreshLocation();
+      } catch (err) {
+        console.error('Error in refreshLocation:', err);
+        // Don't throw - just log
+      }
+    },
   };
 
   return (
