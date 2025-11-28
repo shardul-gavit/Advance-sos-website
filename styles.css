@@ -1,0 +1,127 @@
+/* Basic layout for full-screen map demo */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-root {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Control panel styling */
+.map-controls {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 220px;
+  backdrop-filter: blur(8px);
+}
+
+.map-controls h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.control-group {
+  margin-bottom: 10px;
+}
+
+.control-group label {
+  font-size: 12px;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-group input[type='radio'],
+.control-group input[type='checkbox'] {
+  accent-color: #2563eb;
+}
+
+.style-options {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.style-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #eff6ff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #1d4ed8;
+}
+
+.style-option input {
+  margin: 0;
+}
+
+.overlay-toggle {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.overlay-toggle span {
+  font-size: 12px;
+  color: #111827;
+}
+
+/* Popup styling */
+.sos-popup {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.sos-popup h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+.sos-popup p {
+  margin: 0 0 4px;
+}
+
+.sos-popup strong {
+  font-weight: 600;
+}
+
+

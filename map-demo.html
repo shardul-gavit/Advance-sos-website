@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advance SOS - Mapbox GL Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Mapbox GL JS CDN -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.1/mapbox-gl.js"></script>
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!--
+      If you want to use your real token without editing map.js,
+      you can define it here:
+      <script>
+        window.MAPBOX_ACCESS_TOKEN = 'pk.your-real-token-here';
+      </script>
+    -->
+  </head>
+  <body>
+    <div class="app-root">
+      <div id="map"></div>
+
+      <div class="map-controls">
+        <h2>SOS Map Controls</h2>
+
+        <div class="control-group">
+          <label>Base Map Style</label>
+          <div class="style-options">
+            <label class="style-option">
+              <input
+                type="radio"
+                name="base-style"
+                value="normal"
+                checked
+              />
+              <span>Streets</span>
+            </label>
+            <label class="style-option">
+              <input type="radio" name="base-style" value="satellite" />
+              <span>Satellite</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="overlay-toggle">
+            <input
+              type="checkbox"
+              id="satellite-overlay-toggle"
+              name="satellite-overlay-toggle"
+            />
+            <span>Satellite overlay (raster)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App logic -->
+    <script type="module" src="./ui.js"></script>
+  </body>
+</html>
+
+

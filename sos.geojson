@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [73.1812, 22.3072]
+      },
+      "properties": {
+        "user": "Rahul Sharma",
+        "time": "2025-11-28T10:15:00Z",
+        "incident": "Road accident reported near city center. Multiple vehicles involved."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [73.1855, 22.3125]
+      },
+      "properties": {
+        "user": "Priya Patel",
+        "time": "2025-11-28T10:20:00Z",
+        "incident": "Medical emergency reported at residential area. Possible cardiac arrest."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [73.175, 22.302]
+      },
+      "properties": {
+        "user": "Amit Verma",
+        "time": "2025-11-28T10:25:00Z",
+        "incident": "Fire reported in commercial building. Smoke visible from distance."
+      }
+    }
+  ]
+}
+
+
